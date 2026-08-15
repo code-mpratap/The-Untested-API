@@ -1,4 +1,4 @@
-# Bug Report
+# BUG REPORT
 
 Bugs found while writing tests for the Task Manager API.
 
