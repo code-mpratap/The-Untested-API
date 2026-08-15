@@ -85,14 +85,14 @@ actually uses `todo | in_progress | done`.
 **How I found it:** Noticed the mismatch reading both files before
 writing tests.
 
-**Fix would look like:** Update the README's task shape section to
+**Fix would look like:** Update the README section to
 match the code's actual status values.
 
 ---
 
 # Design Decisions: PATCH /tasks/:id/assign
 
-**Empty `assignee` string:** Rejected with 400, consistent with how
+**Empty `assignee` string:** Rejected with 400 Bad Request error. It is consistent with how
 other fields (title, status, priority) are validated elsewhere in the
 codebase.
 
