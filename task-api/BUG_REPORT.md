@@ -14,6 +14,7 @@ Bugs found while writing tests for the Task Manager API.
 
 **Why:** Offset was `page * limit` (gives 10 for page=1). It should be
 `(page - 1) * limit`.
+
 **How I found it:** Test created 15 tasks, requested page=1/limit=10,
 expected "Task 1" in the results — it wasn't there.
 
@@ -25,11 +26,14 @@ expected "Task 1" in the results — it wasn't there.
 
 **Location:** `taskService.js`, `getByStatus()`
 
-**Expected:** `?status=done` returns only exact `"done"` matches.
+**Expected:** `?status=progress` returns only exact `"progress"` matches.
+
 **Actual:** Uses `.includes()`, so `?status=progress` also matches
 `"in_progress"` since it's a substring match, not an exact one.
+
 **How I found it:** Filtered by a substring of an existing status and
 got an unintended match.
+
 **Fix would look like:** Change `.includes(status)` to `=== status`.
 
 ---
@@ -40,11 +44,14 @@ got an unintended match.
 
 **Expected:** `PUT /tasks/:id` only updates editable fields (title,
 description, status, priority, dueDate).
+
 **Actual:** `update()` merges the full request body with no field
 restriction, so sending `id` or `createdAt` silently overwrites them.
 If `id` changes, the task becomes unreachable at its original id.
+
 **How I found it:** Sent `{ title: 'Changed', id: 'hijacked-id' }` via
 PUT, then fetched the task by its original id — got a 404.
+
 **Fix would look like:** Whitelist which fields `update()` applies
 (e.g. only `title`, `description`, `status`, `priority`, `dueDate`).
 
@@ -55,10 +62,13 @@ PUT, then fetched the task by its original id — got a 404.
 **Location:** `taskService.js`, `completeTask()`
 
 **Expected:** Completing a task only changes `status` and `completedAt`.
+
 **Actual:** It also hardcodes `priority: 'medium'`, so a `'high'`
 priority task loses that priority once completed.
+
 **How I found it:** Created a task with `priority: 'high'`, completed
 it, and the returned priority was `'medium'` instead.
+
 **Fix would look like:** Remove the `priority: 'medium'` line from the
 update object in `completeTask()`.
 
@@ -69,10 +79,13 @@ update object in `completeTask()`.
 **Location:** `README.md` vs. `validators.js` (`VALID_STATUSES`)
 
 **Expected:** Docs match what the code accepts.
+
 **Actual:** README lists `pending | in-progress | completed`; code
 actually uses `todo | in_progress | done`.
+
 **How I found it:** Noticed the mismatch reading both files before
 writing tests.
+
 **Fix would look like:** Update the README's task shape section to
 match the code's actual status values.
 
