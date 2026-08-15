@@ -9,11 +9,14 @@ Bugs found while writing tests for the Task Manager API.
 **Location:** `taskService.js`, `getPaginated()`
 
 **Expected:** `GET /tasks?page=1&limit=10` returns the first 10 tasks.
-**Actual:** It skipped the first 10 and returned tasks 11-15 instead.
-**Why:** Offset was `page * limit` (gives 10 for page=1), should be
+
+**Actual:** It skipped the first 10 and returned tasks 11 and onwards.
+
+**Why:** Offset was `page * limit` (gives 10 for page=1). It should be
 `(page - 1) * limit`.
 **How I found it:** Test created 15 tasks, requested page=1/limit=10,
 expected "Task 1" in the results — it wasn't there.
+
 **Fix:** Changed `page * limit` to `(page - 1) * limit`.
 
 ---
