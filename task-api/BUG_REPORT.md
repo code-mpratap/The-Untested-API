@@ -49,11 +49,10 @@ description, status, priority, dueDate).
 restriction, so sending `id` or `createdAt` silently overwrites them.
 If `id` changes, the task becomes unreachable at its original id.
 
-**How I found it:** Sent `{ title: 'Changed', id: 'hijacked-id' }` via
-PUT, then fetched the task by its original id — got a 404.
+**How I found it:** Sent `{ title: 'Changed', id: 'Changed-id' }` via
+PUT, then fetched the task by its original id — got a 404 Not found Error.
 
-**Fix would look like:** Whitelist which fields `update()` applies
-(e.g. only `title`, `description`, `status`, `priority`, `dueDate`).
+**Fix would look like:** only `title`, `description`, `status`, `priority`, `dueDate` are allowed to be accepted, rest inputs will be ignored if passed.
 
 ---
 
