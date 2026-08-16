@@ -44,9 +44,8 @@ got an unintended match.
 **Expected:** `PUT /tasks/:id` only updates editable fields (title,
 description, status, priority, dueDate).
 
-**Actual:** `update()` merges the full request body with no field
-restriction, so sending `id` or `createdAt` silently overwrites them.
-If `id` changes, the task becomes unreachable at its original id.
+**Actual:** if we provide it id it will return null which leads to no error 
+and eventually it will trigger the update method that is being called in tasks.js which allows overwriting of the inputs that should not be changed.
 
 **How I found it:** Sent `{ title: 'Changed', id: 'Changed-id' }` via
 PUT, then fetched the task by its original id — got a 404 Not found Error.
