@@ -14,6 +14,6 @@ an intentional choice.
 
 ## Questions I'd ask before shipping this to production
 
-Is the in-memory data store (which resets on every restart) intentional
+Is the in-memory data store (which resets on every restart) in the form of array intentional
 for this stage, or is a real, persistent database expected before this
 goes live?

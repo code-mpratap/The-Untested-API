@@ -1,4 +1,4 @@
-# Bug Report
+# BUG REPORT
 
 Bugs found while writing tests for the Task Manager API.
 
@@ -9,11 +9,14 @@ Bugs found while writing tests for the Task Manager API.
 **Location:** `taskService.js`, `getPaginated()`
 
 **Expected:** `GET /tasks?page=1&limit=10` returns the first 10 tasks.
-**Actual:** It skipped the first 10 and returned tasks 11-15 instead.
-**Why:** Offset was `page * limit` (gives 10 for page=1), should be
+
+**Actual:** It skipped the first 10 and returned tasks 11 and onwards.
+
+**Why:** Offset was `page * limit` (gives 10 for page=1). It should be
 `(page - 1) * limit`.
-**How I found it:** Test created 15 tasks, requested page=1/limit=10,
-expected "Task 1" in the results — it wasn't there.
+
+**How I found it:** Wrote a test with 15 tasks and checked if page 1 returned the first task — the test failed because it returned tasks starting from Task 11 instead.
+
 **Fix:** Changed `page * limit` to `(page - 1) * limit`.
 
 ---
@@ -22,11 +25,14 @@ expected "Task 1" in the results — it wasn't there.
 
 **Location:** `taskService.js`, `getByStatus()`
 
-**Expected:** `?status=done` returns only exact `"done"` matches.
+**Expected:** `?status=progress` returns only exact `"progress"` matches.
+
 **Actual:** Uses `.includes()`, so `?status=progress` also matches
 `"in_progress"` since it's a substring match, not an exact one.
+
 **How I found it:** Filtered by a substring of an existing status and
 got an unintended match.
+
 **Fix would look like:** Change `.includes(status)` to `=== status`.
 
 ---
@@ -37,13 +43,14 @@ got an unintended match.
 
 **Expected:** `PUT /tasks/:id` only updates editable fields (title,
 description, status, priority, dueDate).
-**Actual:** `update()` merges the full request body with no field
-restriction, so sending `id` or `createdAt` silently overwrites them.
-If `id` changes, the task becomes unreachable at its original id.
-**How I found it:** Sent `{ title: 'Changed', id: 'hijacked-id' }` via
-PUT, then fetched the task by its original id — got a 404.
-**Fix would look like:** Whitelist which fields `update()` applies
-(e.g. only `title`, `description`, `status`, `priority`, `dueDate`).
+
+**Actual:** if we provide it id it will return null which leads to no error 
+and eventually it will trigger the update method that is being called in tasks.js which allows overwriting of the inputs that should not be changed.
+
+**How I found it:** Sent `{ title: 'Changed', id: 'Changed-id' }` via
+PUT, then fetched the task by its original id — got a 404 Not found Error.
+
+**Fix would look like:** only `title`, `description`, `status`, `priority`, `dueDate` are allowed to be accepted, rest inputs will be ignored if passed.
 
 ---
 
@@ -52,10 +59,13 @@ PUT, then fetched the task by its original id — got a 404.
 **Location:** `taskService.js`, `completeTask()`
 
 **Expected:** Completing a task only changes `status` and `completedAt`.
+
 **Actual:** It also hardcodes `priority: 'medium'`, so a `'high'`
 priority task loses that priority once completed.
+
 **How I found it:** Created a task with `priority: 'high'`, completed
 it, and the returned priority was `'medium'` instead.
+
 **Fix would look like:** Remove the `priority: 'medium'` line from the
 update object in `completeTask()`.
 
@@ -66,18 +76,21 @@ update object in `completeTask()`.
 **Location:** `README.md` vs. `validators.js` (`VALID_STATUSES`)
 
 **Expected:** Docs match what the code accepts.
+
 **Actual:** README lists `pending | in-progress | completed`; code
 actually uses `todo | in_progress | done`.
+
 **How I found it:** Noticed the mismatch reading both files before
 writing tests.
-**Fix would look like:** Update the README's task shape section to
+
+**Fix would look like:** Update the README section to
 match the code's actual status values.
 
 ---
 
 # Design Decisions: PATCH /tasks/:id/assign
 
-**Empty `assignee` string:** Rejected with 400, consistent with how
+**Empty `assignee` string:** Rejected with 400 Bad Request error. It is consistent with how
 other fields (title, status, priority) are validated elsewhere in the
 codebase.
 
