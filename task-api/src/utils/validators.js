@@ -17,6 +17,9 @@ const validateCreateTask = (body) => {
   return null;
 };
 
+// Another reason of Bug 3 because it is only checking 4 inputs, 
+// if we provide it id it will return null which leads to no error 
+// and eventually it will trigger the update method that is being called in tasks.js
 const validateUpdateTask = (body) => {
   if (body.title !== undefined && (typeof body.title !== 'string' || body.title.trim() === '')) {
     return 'title must be a non-empty string';
@@ -33,6 +36,7 @@ const validateUpdateTask = (body) => {
   return null;
 };
 
+// validating the new Feature
 const validateAssignTask = (body) => {
   if (
     body.assignee === undefined ||

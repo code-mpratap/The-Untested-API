@@ -6,8 +6,11 @@ const getAll = () => [...tasks];
 
 const findById = (id) => tasks.find((t) => t.id === id);
 
+//Bug 2. getByStatus matches partial status strings with the help of .includes() builtin method
 const getByStatus = (status) => tasks.filter((t) => t.status.includes(status));
 
+//Bug 1. Pagination returns the wrong page
+//Bug 1 has been fixed now
 const getPaginated = (page, limit) => {
   const offset = (page-1) * limit;
   return tasks.slice(offset, offset + limit);
@@ -15,6 +18,8 @@ const getPaginated = (page, limit) => {
 
 const getStats = () => {
   const now = new Date();
+
+  // Bug 5. README and code disagree on status values
   const counts = { todo: 0, in_progress: 0, done: 0 };
   let overdue = 0;
 
@@ -47,6 +52,8 @@ const update = (id, fields) => {
   const index = tasks.findIndex((t) => t.id === id);
   if (index === -1) return null;
 
+  //Bug 3. update() is allowing overwriting of id and createdAt 
+  // which makes the task unreachable at its original id
   const updated = { ...tasks[index], ...fields };
   tasks[index] = updated;
   return updated;
@@ -60,6 +67,9 @@ const remove = (id) => {
   return true;
 };
 
+// Bug 4: Completing a task resets its priority to "medium", 
+// in spite of that it should only its status should be changed
+// once the task is completed
 const completeTask = (id) => {
   const task = findById(id);
   if (!task) return null;
