@@ -143,6 +143,7 @@ describe('Task routes', () => {
     });
   });
 
+  // Test for the new Feature
   describe('PATCH /tasks/:id/complete', () => {
     test('happy path: marks task as done', async () => {
       const createRes = await request(app).post('/tasks').send({ title: 'Finish' });

@@ -6,7 +6,7 @@ Bugs found while writing tests for the Task Manager API.
 
 ## Bug 1: Pagination returns the wrong page (FIXED)
 
-**Location:** `taskService.js`, `getPaginated()`
+**Location:** `getPaginated()` inside `taskService.js`
 
 **Expected:** `GET /tasks?page=1&limit=10` returns the first 10 tasks.
 
@@ -23,7 +23,7 @@ Bugs found while writing tests for the Task Manager API.
 
 ## Bug 2: `getByStatus` matches partial status strings
 
-**Location:** `taskService.js`, `getByStatus()`
+**Location:**  `getByStatus()` inside `taskService.js`
 
 **Expected:** `?status=progress` returns only exact `"progress"` matches.
 
@@ -39,7 +39,7 @@ got an unintended match.
 
 ## Bug 3: `update()` allows overwriting `id` and `createdAt`
 
-**Location:** `taskService.js`, `update()`; `validators.js`, `validateUpdateTask()`
+**Location:** `update()` inside `taskService.js` as well as  `validateUpdateTask()` inside `validators.js`
 
 **Expected:** `PUT /tasks/:id` only updates editable fields (title,
 description, status, priority, dueDate).
@@ -56,7 +56,7 @@ PUT, then fetched the task by its original id — got a 404 Not found Error.
 
 ## Bug 4: Completing a task resets its priority to "medium"
 
-**Location:** `taskService.js`, `completeTask()`
+**Location:**  `completeTask()` inside `taskService.js`
 
 **Expected:** Completing a task only changes `status` and `completedAt`.
 
