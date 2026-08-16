@@ -15,8 +15,7 @@ Bugs found while writing tests for the Task Manager API.
 **Why:** Offset was `page * limit` (gives 10 for page=1). It should be
 `(page - 1) * limit`.
 
-**How I found it:** Test created 15 tasks, requested page=1/limit=10,
-expected "Task 1" in the results — it wasn't there.
+**How I found it:** Wrote a test with 15 tasks and checked if page 1 returned the first task — the test failed because it returned tasks starting from Task 11 instead.
 
 **Fix:** Changed `page * limit` to `(page - 1) * limit`.
 
